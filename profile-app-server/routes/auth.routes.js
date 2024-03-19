@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const User = require('../models/User.model');
 const bcrypt = require('bcryptjs');
+const isAuthenticated = require('../middlewaree/isAuthenticated');
+const jwt = require('jsonwebtoken');
 
 router.post('/signup', async (req, res, next) => {
   const { username, password, campus, course } = req.body;
@@ -22,8 +24,10 @@ router.post('/signup', async (req, res, next) => {
       password: hashedPassword,
       campus,
       course,
+      image: '',
     });
-    res.json({ userinfo: createdUser });
+    const { password: _, ...userInfo } = createdUser.toObject();
+    res.json({ userinfo: userInfo });
   } catch (error) {
     res.json({ error: 'an error occurred while signing up' });
   }
@@ -37,12 +41,24 @@ router.post('/login', async (req, res, next) => {
   try {
     const findUser = await User.findOne({ username });
     const hashedPassword = findUser.password;
-    if (bcrypt.compare(password, hashedPassword)) {
-      res.json({ message: 'sucessfully signed' });
+    const isMatchedPassword = await bcrypt.compare(password, hashedPassword);
+    if (!isMatchedPassword) {
+      res.json({ message: 'the info is not correct' });
     }
+    const { password: _, __v, ...payload } = findUser.toObject();
+    // create payload
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      algorithm: 'HS256',
+      expiresIn: '6h',
+    });
+    res.json({ token: token, payload: payload });
   } catch (error) {
     res.json({ error: 'an error occurred while you are trying to login' });
   }
+});
+
+router.get('/verify', isAuthenticated, (req, res, next) => {
+  res.json(req.user);
 });
 
 module.exports = router;
