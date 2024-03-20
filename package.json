@@ -1,0 +1,24 @@
+{
+  "name": "lab-profile-app-vite",
+  "version": "1.0.0",
+  "description": "![logo_ironhack_blue 7](https://user-images.githubusercontent.com/23629340/40541063-a07a0a8a-601a-11e8-91b5-2f13e4e6b441.png)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fullstack": "concurrently --kill-others \"npm --prefix ./profile-app-server run dev\" \"npm --prefix profile-app-client run dev\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gizemayegul/lab-profile-app-vite.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gizemayegul/lab-profile-app-vite/issues"
+  },
+  "homepage": "https://github.com/gizemayegul/lab-profile-app-vite#readme",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
