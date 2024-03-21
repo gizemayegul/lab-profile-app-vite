@@ -1,17 +1,18 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const API_URL = import.meta.env.VITE_SERVER_URL;
+import { AuthContext } from '../context/auth.context';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [token, setToken] = useState('');
   const navigate = useNavigate('');
   const [error, setError] = useState('');
   const usernameHandler = (e) => setUsername(e.target.value);
   const passwordHandler = (e) => setPassword(e.target.value);
+  const { setToken } = useContext(AuthContext);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -24,10 +25,8 @@ export default function Login() {
       const response = await axios.post(`${API_URL}/auth/login`, loginUser);
       setUsername('');
       setPassword('');
-      setToken(response.data.token);
       navigate('/');
-
-      console.log(token);
+      setToken(response.data.token);
     } catch (error) {
       setError(error.response.data.error);
     }
