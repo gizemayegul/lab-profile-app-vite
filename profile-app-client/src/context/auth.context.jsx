@@ -1,15 +1,17 @@
 import { createContext } from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const API_URL = import.meta.env.VITE_SERVER_URL;
 
 const AuthContext = createContext();
 
 function AuthProviderWrapper(prop) {
-  const [isLogged, setisLogged] = useState(false);
   const [token, setToken] = useState('');
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate;
   if (token) {
     localStorage.setItem('token', token);
   }
@@ -23,33 +25,31 @@ function AuthProviderWrapper(prop) {
           })
           .then((response) => {
             setUser(response.data);
-            setisLogged(true);
           })
           .catch((error) => {
-            setisLogged(false);
             setUser(null);
+            if (storedToken !== token) {
+              localStorage.removeItem('token');
+              navigate('/');
+              setUser(null);
+            }
             console.log(error);
+          })
+          .finally(() => {
+            setLoading(false);
           });
+      } else {
+        setLoading(false);
       }
-
-      // const removeToken = () => {
-      //   localStorage.removeItem('token');
-      // };
-
-      // const logOutUser = () => {
-      //   removeToken();
-      //   authenticatUser();
-      // };
     };
 
     authenticatUser();
   }, [token]);
 
-  console.log(user, isLogged);
-
   return (
-    <AuthContext.Provider value={{ setToken, user }}>
-      {prop.children}
+    <AuthContext.Provider value={{ setToken, user, setUser }}>
+      {!loading && prop.children}
+      {loading && <div>loading...</div>}
     </AuthContext.Provider>
   );
 }
