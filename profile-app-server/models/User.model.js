@@ -24,11 +24,9 @@ const userSchema = new Schema(
       type: String,
       enum: ['Web Dev', 'UX/UI', 'Data Analytics', 'Cyber Security'],
     },
-    image: [
-      {
-        type: String,
-      },
-    ],
+    image: {
+      type: String,
+    },
   },
 
   {

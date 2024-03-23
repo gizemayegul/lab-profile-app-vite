@@ -38,13 +38,14 @@ router.post('/upload', isAuthenticated, async (req, res, next) => {
   const { image } = req.body;
   const { username } = req.user;
   try {
-    console.log(image);
-    const findUser = await User.findOne({ username });
-    await findUser.image.push(image);
-    console.log(findUser);
-    res.json({ findUser });
+    const user = await User.findOneAndUpdate(
+      { username },
+      { image: image },
+      { new: true }
+    );
+    res.status(200).json({ message: 'File uploaded successfully', user });
   } catch (err) {
-    res.json({ err: 'smt went wrong' });
+    res.status(500).json({ error: 'Failed to upload file' });
   }
 });
 module.exports = router;
